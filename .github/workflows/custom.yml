@@ -1,30 +1,31 @@
-name: Continuous Integration
+name: Generate Contributors List
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 0'  # Runs every Sunday at midnight
 
 jobs:
-  build-and-test:
+  update-contributors:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate HTML
+      - name: Generate contributors list
         run: |
-          sudo apt-get install tidy -y
-          find . -name "*.html" -exec tidy -errors -q {} \; || true
+          echo "## 🌟 Project Contributors" > CONTRIBUTORS.md
+          echo "" >> CONTRIBUTORS.md
+          echo "Updated automatically on $(date)" >> CONTRIBUTORS.md
+          echo "" >> CONTRIBUTORS.md
+          git log --format='%aN' | sort -u | sed 's/^/- /' >> CONTRIBUTORS.md
 
-      - name: Lint CSS files
+      - name: Commit and push changes
         run: |
-          sudo npm install -g stylelint stylelint-config-standard
-          npx stylelint "**/*.css" || true
-
-      - name: Lint JavaScript files
-        run: |
-          sudo npm install -g eslint @eslint/js
-          npx eslint "**/*.js" || true
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add CONTRIBUTORS.md
+          git commit -m "Update contributors list [skip ci]" || echo "No changes to commit"
+          git push
