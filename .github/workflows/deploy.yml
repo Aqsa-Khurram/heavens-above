@@ -1,32 +1,38 @@
-name: Deploy to Heroku
+name: Deployment Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
-  deploy:
+  build-test-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Git config
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
-      - name: Pull latest changes to avoid push conflicts
-        run: |
-          git fetch origin main
-          git pull origin main --rebase
+      - name: Install dependencies
+        run: npm install
 
-      - name: Deploy (no Heroku)
-        run: echo "Deployed successfully!"
+      - name: Run tests
+        run: npm test
 
-      - name: Push updates if workflow commits something
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          git add .
-          git commit -m "Update contributors list [skip ci]" || echo "No changes to commit"
-          git push origin main || echo "Push skipped (already up to date)"
+          echo "Deploying to Heroku..."
+          npm install -g heroku
+          heroku git:remote -a your-heroku-app-name
+          git push heroku main
+          
+      - name: Post-deployment verification
+        run: echo "Deployment completed successfully."
