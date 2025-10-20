@@ -1,32 +1,41 @@
-name: Deploy to Heroku
+name: Documentation Deployment
 
 on:
   push:
+    branches: [ "main" ]  # Deploy docs on every push to main
+  pull_request:
     branches: [ "main" ]
 
 jobs:
-  deploy:
+  deploy-docs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      # 1. Checkout the repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Git config
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      # 2. Set up Node.js (if you have any Node.js build steps)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
-      - name: Pull latest changes to avoid push conflicts
-        run: |
-          git fetch origin main
-          git pull origin main --rebase
+      # 3. Install dependencies (if required to build docs)
+      - name: Install dependencies
+        run: npm install || echo "No dependencies to install"
 
-      - name: Deploy (no Heroku)
-        run: echo "Deployed successfully!"
-
-      - name: Push updates if workflow commits something
+      # 4. Build documentation
+      - name: Build documentation
         run: |
-          git add .
-          git commit -m "Update contributors list [skip ci]" || echo "No changes to commit"
-          git push origin main || echo "Push skipped (already up to date)"
+          # Example: copy Markdown or HTML files to public folder
+          mkdir -p public
+          cp -r docs/* public/ || echo "No docs folder found, skipping copy"
+          echo "Documentation is ready in ./public"
+
+      # 5. Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
