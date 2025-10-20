@@ -9,36 +9,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repository
+      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Set up Node.js environment
+      # 2. Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      # 3. Install project dependencies
+      # 3. Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4. Run tests (pass even if no tests found)
+      # 4. Run tests (optional)
       - name: Run tests
-        run: npm test || echo "No tests found, skipping"
+        run: |
+          if npm run | grep -q "test"; then
+            npm test
+          else
+            echo "No test script found, skipping tests."
+          fi
 
-      # 5. Build the project (skip if build script is missing)
+      # 5. Build project (optional)
       - name: Build project
-        run: npm run build || echo "No build script defined, skipping"
+        run: |
+          if npm run | grep -q "build"; then
+            npm run build
+          else
+            echo "No build script found, skipping build."
+          fi
 
-      # 6. Deploy to Heroku using official GitHub Action
+      # 6. Deploy to Heroku
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "heavens-above-demo"   # <-- Replace with your Heroku app name
-          heroku_email: "your-email@example.com"  # <-- Replace with your Heroku email
+          heroku_app_name: "heavens-above-demo"
+          heroku_email: "your-email@example.com"
 
       # 7. Post-deployment verification
       - name: Post-deployment verification
-        run: echo "Deployment completed successfully."
+        run: echo "Deployment completed successfully!"
