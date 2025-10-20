@@ -22,9 +22,15 @@ jobs:
       - name: Lint CSS files
         run: |
           sudo npm install -g stylelint stylelint-config-standard
-          npx stylelint "/*.css" || true
+          npx stylelint "**/*.css" || true
+
+      - name: Setup ESLint config (if missing)
+        run: |
+          if [ ! -f eslint.config.js ]; then
+            echo "export default { rules: {} };" > eslint.config.js
+          fi
 
       - name: Lint JavaScript files
         run: |
           sudo npm install -g eslint
-          npx eslint "/*.js" || true
+          npx eslint "**/*.js" || true
