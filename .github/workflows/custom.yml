@@ -1,0 +1,30 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate HTML
+        run: |
+          sudo apt-get install tidy -y
+          find . -name "*.html" -exec tidy -errors -q {} \; || true
+
+      - name: Lint CSS files
+        run: |
+          sudo npm install -g stylelint stylelint-config-standard
+          npx stylelint "**/*.css" || true
+
+      - name: Lint JavaScript files
+        run: |
+          sudo npm install -g eslint @eslint/js
+          npx eslint "**/*.js" || true
