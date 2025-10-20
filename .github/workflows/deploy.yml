@@ -45,10 +45,10 @@ jobs:
 
       # Step 6: Deploy documentation to GitHub Pages
       - name: Deploy documentation to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v6
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs   # Change this if your docs are in a different folder
+          publish_dir: ./  # Adjust this path if your documentation is in a different directory
 
       # Step 7: Simulate app deployment
       - name: Simulate application deployment
