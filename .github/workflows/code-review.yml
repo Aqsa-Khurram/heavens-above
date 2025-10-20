@@ -21,5 +21,5 @@ jobs:
       # Replace actual Heroku deploy with mock success
       - name: Simulate Heroku deploy (for workflow success)
         run: |
-          echo "🚀 Simulating Heroku deployment..."
-          echo "✅ Deployment simulated successfully!"
+          echo " Simulating Heroku deployment..."
+          echo " Deployment simulated successfully!"
