@@ -2,7 +2,7 @@ name: Scheduled Maintenance
 
 on:
   schedule:
-    - cron: "*/5 * * * *" # every 5 minutes
+    - cron: '0 0 * * 0' # every Sunday at midnight
   workflow_dispatch: # allows manual run from GitHub Actions tab
 
 jobs:
