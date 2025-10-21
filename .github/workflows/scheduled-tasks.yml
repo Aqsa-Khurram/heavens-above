@@ -2,7 +2,8 @@ name: Scheduled Maintenance
 
 on:
   schedule:
-    - cron: '*/5 * * * *' # every 5 minutes
+    - cron: "*/5 * * * *" # every 5 minutes
+  workflow_dispatch: # allows manual run from GitHub Actions tab
 
 jobs:
   maintenance:
@@ -13,5 +14,5 @@ jobs:
 
       - name: Run cleanup (log only)
         run: |
-          echo "Running weekly cleanup..."
-          echo "No cleanup script found, skipping maintenance."
+          echo "Running scheduled cleanup..."
+          echo "No cleanup script found, skipping maintenance."
