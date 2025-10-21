@@ -2,7 +2,7 @@ name: Scheduled Maintenance
 
 on:
   schedule:
-    - cron: '0 0 * * 0' # every Sunday at midnight
+    - cron: '*/5 * * * *' # every 5 minutes
 
 jobs:
   maintenance:
