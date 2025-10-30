@@ -30,7 +30,7 @@ jobs:
         run: |
           # Example: copy Markdown or HTML files to public folder
           mkdir -p public
-          cp -r docs/* public/ || echo "No docs folder found, skipping copy"
+          cp -r src/* public/ || echo "No docs folder found, skipping copy"
           echo "Documentation is ready in ./public"
 
       # 5. Deploy to GitHub Pages
