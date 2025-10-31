@@ -25,11 +25,14 @@ jobs:
       - name: Build documentation (collect only needed files)
         run: |
           mkdir -p site
-          # Copy public folder contents (this includes index.html)
+
+          # Copy entire public folder contents into site/
           cp -r public/* site/ 2>/dev/null || true
-          # Copy markdown documentation
+
+          # Copy markdown docs
           cp *.md site/ 2>/dev/null || true
           cp *.rst site/ 2>/dev/null || true
+
           echo "Site contents:"
           ls -R site
 
