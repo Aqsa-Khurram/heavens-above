@@ -4,12 +4,16 @@ on:
   push:
     branches: ["main"]
     paths:
-      - "docs/**"
+      - "**.md"
+      - "**.rst"
+      - "public/**"
       - ".github/workflows/**"
   pull_request:
     branches: ["main"]
     paths:
-      - "docs/**"
+      - "**.md"
+      - "**.rst"
+      - "public/**"
       - ".github/workflows/**"
 
 jobs:
@@ -25,15 +29,31 @@ jobs:
         with:
           node-version: '18'
 
-      # (optional) build step if you generate docs
-      - name: Build documentation
+      # Build documentation folder manually
+      - name: Collect documentation files
         run: |
-          echo "Documentation ready in ./docs"
-          ls docs
+          mkdir -p site
 
-      - name: Deploy ONLY documentation
+          # Copy Markdown and reStructuredText from root
+          cp -r *.md site/ 2>/dev/null || true
+          cp -r *.rst site/ 2>/dev/null || true
+
+          # Copy README.md separately
+          cp README.md site/ 2>/dev/null || true
+
+          # Copy docs folder if exists
+          [ -d docs ] && cp -r docs site/ || true
+
+          # Copy public folder if exists
+          [ -d public ] && cp -r public site/ || true
+
+          echo "Contents being deployed:"
+          ls -R site
+
+      # Deploy only the site folder
+      - name: Deploy Docs to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
-          force_orphan: true      # <- CLEAN branch each deploy
+          publish_dir: ./site
+          force_orphan: true
