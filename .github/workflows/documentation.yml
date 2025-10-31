@@ -2,61 +2,40 @@ name: Documentation Deployment
 
 on:
   push:
-    branches: ["main"]
-    paths:
-      - "**.md"
-      - "**.rst"
-      - "public/**"
-      - ".github/workflows/**"
+    branches: [ "main" ]  # Deploy docs on every push to main
   pull_request:
-    branches: ["main"]
-    paths:
-      - "**.md"
-      - "**.rst"
-      - "public/**"
-      - ".github/workflows/**"
+    branches: [ "main" ]
 
 jobs:
   deploy-docs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Set up Node.js (if you have any Node.js build steps)
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      # Build documentation folder manually (exclude tests)
-      - name: Collect documentation files
+      # 3. Install dependencies (if required to build docs)
+      - name: Install dependencies
+        run: npm install || echo "No dependencies to install"
+
+      # 4. Build documentation
+      - name: Build documentation
         run: |
-          mkdir -p site
+          # Example: copy Markdown or HTML files to public folder
+          mkdir -p public
+          cp -r src/* public/ || echo "No docs folder found, skipping copy"
+          echo "Documentation is ready in ./public"
 
-          # Copy Markdown and reStructuredText from root
-          cp -r *.md site/ 2>/dev/null || true
-          cp -r *.rst site/ 2>/dev/null || true
-
-          # Copy README.md separately
-          cp README.md site/ 2>/dev/null || true
-
-          # Copy docs folder if exists
-          [ -d docs ] && cp -r docs site/ || true
-
-          # Copy public folder if exists
-          [ -d public ] && cp -r public site/ || true
-
-          # DO NOT COPY TESTS
-          echo "Excluding __tests__ folder from deployment."
-
-          echo "Contents being deployed:"
-          ls -R site
-
-      # Deploy only the site folder
-      - name: Deploy Docs to GitHub Pages
+      # 5. Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
-          force_orphan: true
+          publish_dir: ./docs
