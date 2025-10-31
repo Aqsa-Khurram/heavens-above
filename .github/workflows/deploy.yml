@@ -2,60 +2,43 @@ name: Deployment Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
 
 jobs:
   build-test-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 18
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Run tests
       - name: Run tests
         run: |
           if npm run | grep -q "test"; then
             npm test
           else
-            echo "No test script found. Skipping tests."
+            echo "No tests found."
           fi
 
-      # Step 5: Build project (if a build script exists)
       - name: Build project
         run: |
           if npm run | grep -q "build"; then
             npm run build
           else
-            echo "No build script found. Skipping build."
+            echo "No build script."
           fi
 
-      # Step 6: Deploy documentation to GitHub Pages
-      - name: Deploy documentation to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./  # Adjust this path if your documentation is in a different directory
-          force_orphan: true
-      # Step 7: Simulate app deployment
-      - name: Simulate application deployment
+      - name: Deploy to Vercel
         run: |
-          echo "Skipping actual Heroku deployment."
-          echo "Deployment simulated successfully!"
-
-      # Step 8: Post-deployment verification
-      - name: Post-deployment verification
-        run: echo "Deployment workflow completed successfully."
+          npm install -g vercel
+          vercel --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
